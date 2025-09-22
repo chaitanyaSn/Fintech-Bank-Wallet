@@ -1,8 +1,11 @@
 package com.paypal.UserMs.service;
 
-import com.paypal.UserMs.entity.User;
+import com.paypal.UserMs.dto.UserDto;
+import com.paypal.UserMs.entity.UserEntity;
 import com.paypal.UserMs.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,25 +17,52 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
 
     @Override
-    public User createUser(User user) {
-        Optional<User> existingUser =userRepository.findByEmail(user.getEmail());
-
-        if(existingUser.isPresent()){
-            throw new RuntimeException("User with email " + user.getEmail() + " already exists");
+    public void createUser(UserDto userDto) {
+        if(userRepository.findByEmail(userDto.getEmail()).isPresent()){
+            throw new RuntimeException("User with email " + userDto.getEmail() + " already exists");
         }
+        userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        Long walledId=null;
 
-        return userRepository.save(user);
+        // todo walletMs request
+
+        userDto.setWalletId(walledId);
+        userRepository.save(userDto.toEntity());
+
+
     }
 
     @Override
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
+    public UserDto getUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"))
+                .toDto();
     }
 
     @Override
-    public List<User> getAllUser() {
+    public UserDto loginUser(UserDto userDto) {
+       UserEntity user=userRepository.findByEmail(userDto.getEmail())
+               .orElseThrow(()-> new UsernameNotFoundException("User not found"));
+
+       if(!passwordEncoder.matches(userDto.getPassword(), user.getPassword())){
+           throw new RuntimeException("Invalid password");
+       }
+       return user.toDto();
+    }
+
+    @Override
+    public List<UserEntity> getAllUser() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public UserDto getUser(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email))
+                .toDto();
     }
 }

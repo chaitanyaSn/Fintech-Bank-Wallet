@@ -1,15 +1,20 @@
 package com.paypal.UserMs.service;
 
-import com.paypal.UserMs.entity.User;
+import com.paypal.UserMs.dto.UserDto;
+import com.paypal.UserMs.entity.UserEntity;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
 
-    User createUser(User user);
+    void createUser(UserDto userDto);
 
-    Optional<User> getUserById(Long id);
+   UserDto getUserById(Long id);
 
-    List<User> getAllUser();
+    UserDto loginUser(UserDto userDto);
+
+    List<UserEntity> getAllUser();
+
+    UserDto getUser(String email);
 }
