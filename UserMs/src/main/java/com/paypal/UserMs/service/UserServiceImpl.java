@@ -1,6 +1,8 @@
 package com.paypal.UserMs.service;
 
+import com.paypal.UserMs.client.WalletClient;
 import com.paypal.UserMs.dto.UserDto;
+import com.paypal.UserMs.dto.WalletDto;
 import com.paypal.UserMs.entity.UserEntity;
 import com.paypal.UserMs.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final WalletClient walletClient;
 
 
     @Override
@@ -26,12 +29,18 @@ public class UserServiceImpl implements UserService{
             throw new RuntimeException("User with email " + userDto.getEmail() + " already exists");
         }
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        Long walledId=null;
 
-        // todo walletMs request
+        UserEntity savedUser = userRepository.save(userDto.toEntity());
 
-        userDto.setWalletId(walledId);
-        userRepository.save(userDto.toEntity());
+
+        WalletDto walletDto=new WalletDto();
+        walletDto.setUserId(savedUser.getId());
+        walletDto.setBalance(100.0);
+
+        Long walledId = walletClient.createWallet(walletDto);
+
+        savedUser.setWalletId(walledId);
+        userRepository.save(savedUser);
 
 
     }

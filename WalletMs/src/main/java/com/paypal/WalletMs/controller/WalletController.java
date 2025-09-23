@@ -16,16 +16,14 @@ public class WalletController {
     private final WalletService walletService;
 
     @PostMapping
-    public ResponseEntity<?> createWallet(@RequestBody WalletDto walletDto) {
+    public ResponseEntity<Long> createWallet(@RequestBody WalletDto walletDto) {
         try {
             Long walletId = walletService.createWallet(walletDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(
-                    new ApiResponse("Wallet created successfully", walletId)
-            );
+            return ResponseEntity.status(HttpStatus.CREATED).body(walletId);
+
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    new ApiResponse(e.getMessage(), null)
-            );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
         }
     }
 

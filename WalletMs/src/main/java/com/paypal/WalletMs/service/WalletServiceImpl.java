@@ -21,10 +21,10 @@ public class WalletServiceImpl implements WalletService{
         return walletRepository.save(walletDto.toEntity()).getId();
     }
 
-    @Override
-    public WalletDto getWalletByUserId(Long userId) {
-        return walletRepository.findById(userId).orElseThrow(()->new RuntimeException("Wallet not found")).toDto();
-    }
+        @Override
+        public WalletDto getWalletByUserId(Long userId) {
+            return walletRepository.findByUserId(userId).orElseThrow(()->new RuntimeException("Wallet not found")).toDto();
+        }
 
     @Override
     public WalletDto creditBalance(Long userId, Double amount) {
