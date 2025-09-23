@@ -9,7 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="Gateway-Service" />
       </profile>
-      <profile name="Annotation profile for UserMs" enabled="true">
+      <profile name="Annotation profile for WalletMs" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
