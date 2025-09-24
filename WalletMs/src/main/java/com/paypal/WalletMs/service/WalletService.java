@@ -8,4 +8,6 @@ public interface WalletService {
     WalletDto getWalletByUserId(Long userId);
     WalletDto creditBalance(Long userId, Double amount);
     WalletDto debitBalance(Long userId, Double amount);
+    Double getBalanceByWalletId(Long walletID);
+    boolean walletExists(Long walletId);
 }

@@ -15,6 +15,14 @@ public class WalletController {
 
     private final WalletService walletService;
 
+
+    @GetMapping("/balance/{walletId}")
+    public ResponseEntity<Double> getWalletBalance(@PathVariable Long walletId) {
+        Double balance = walletService.getBalanceByWalletId(walletId);
+        return ResponseEntity.ok(balance);
+    }
+
+
     @PostMapping
     public ResponseEntity<Long> createWallet(@RequestBody WalletDto walletDto) {
         try {
@@ -39,15 +47,15 @@ public class WalletController {
         }
     }
 
-    @PutMapping("/{userId}/credit")
-    public ResponseEntity<?> creditBalance(@PathVariable Long userId, @RequestParam Double amount) {
+    @PutMapping("/{walletId}/credit")
+    public ResponseEntity<?> creditBalance(@PathVariable Long walletId, @RequestParam Double amount) {
         try {
             if (amount <= 0) {
                 return ResponseEntity.badRequest().body(
                         new ApiResponse("Amount must be greater than zero", null)
                 );
             }
-            WalletDto walletDto = walletService.creditBalance(userId, amount);
+            WalletDto walletDto = walletService.creditBalance(walletId, amount);
             return ResponseEntity.ok(walletDto);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
@@ -56,15 +64,15 @@ public class WalletController {
         }
     }
 
-    @PutMapping("/{userId}/debit")
-    public ResponseEntity<?> debitBalance(@PathVariable Long userId, @RequestParam Double amount) {
+    @PutMapping("/{walletId}/debit")
+    public ResponseEntity<?> debitBalance(@PathVariable Long walletId, @RequestParam Double amount) {
         try {
             if (amount <= 0) {
                 return ResponseEntity.badRequest().body(
                         new ApiResponse("Amount must be greater than zero", null)
                 );
             }
-            WalletDto walletDto = walletService.debitBalance(userId, amount);
+            WalletDto walletDto = walletService.debitBalance(walletId, amount);
             return ResponseEntity.ok(walletDto);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(

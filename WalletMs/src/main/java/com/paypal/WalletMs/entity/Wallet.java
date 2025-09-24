@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.antlr.v4.runtime.misc.NotNull;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -26,6 +27,9 @@ public class Wallet {
 
     private Double balance;
 
+    @Enumerated(EnumType.STRING)
+    private WalletStatus walletStatus;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
@@ -38,6 +42,7 @@ public class Wallet {
         wallet.setId(this.id);
         wallet.setUserId(this.userId);
         wallet.setBalance(this.balance);
+        wallet.setWalletStatus(this.walletStatus);
         return wallet;
     }
 }

@@ -1,4 +1,4 @@
-package com.paypal.UserMs.config;
+package com.paypal.TransactionMs.config;
 
 
 import org.springframework.context.annotation.Bean;
@@ -22,14 +22,6 @@ public class SecurityConfig {
                 .permitAll().anyRequest().denyAll());
         return http.build();
     }
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
-    }
 
-    @Bean
-    AuthenticationManager authenticationManager(AuthenticationConfiguration builder) throws Exception {
-        return builder.getAuthenticationManager();
-    }
 
 }
