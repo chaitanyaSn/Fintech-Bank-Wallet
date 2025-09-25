@@ -81,6 +81,8 @@ public class TransactionServiceImpl implements TransactionService{
             // Step 3: Mark transaction success
             transaction.setStatus(TransactionStatus.COMPLETED);
 
+            //step 4:notification producer
+
         } catch (Exception e) {
             // If any failure, mark FAILED
             transaction.setStatus(TransactionStatus.FAILED);

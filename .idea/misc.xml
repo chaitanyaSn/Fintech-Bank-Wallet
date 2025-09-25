@@ -8,6 +8,7 @@
         <option value="$PROJECT_DIR$/Gateway-Service/pom.xml" />
         <option value="$PROJECT_DIR$/WalletMs/pom.xml" />
         <option value="$PROJECT_DIR$/TransactionMs/pom.xml" />
+        <option value="$PROJECT_DIR$/NotificationMs/pom.xml" />
       </list>
     </option>
   </component>

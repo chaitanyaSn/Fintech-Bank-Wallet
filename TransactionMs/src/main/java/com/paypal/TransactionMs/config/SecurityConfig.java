@@ -16,6 +16,11 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
+    AuthenticationManager authenticationManagerBean(AuthenticationConfiguration builder) throws Exception {
+        return builder.getAuthenticationManager();
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable().authorizeHttpRequests(auth->auth.requestMatchers(request -> "SECRET"
                         .equals(request.getHeader("X-SECRET-KEY")))

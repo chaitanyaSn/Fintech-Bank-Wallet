@@ -2,6 +2,7 @@ package com.paypal.UserMs.service;
 
 import com.paypal.UserMs.client.WalletClient;
 import com.paypal.UserMs.dto.UserDto;
+import com.paypal.UserMs.dto.UserRegisteredEvent;
 import com.paypal.UserMs.dto.WalletDto;
 import com.paypal.UserMs.entity.UserEntity;
 import com.paypal.UserMs.repository.UserRepository;
@@ -21,6 +22,7 @@ public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final WalletClient walletClient;
+    private final UserProducer userProducer;
 
 
     @Override
@@ -42,6 +44,9 @@ public class UserServiceImpl implements UserService{
         savedUser.setWalletId(walledId);
         userRepository.save(savedUser);
 
+        UserRegisteredEvent event=new UserRegisteredEvent(savedUser.getId(),savedUser.getName(),savedUser.getEmail());
+
+       userProducer.sendUserInfo(event);
 
     }
 

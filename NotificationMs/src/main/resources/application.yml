@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: NotificationMs
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: notification_group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "*"
+            type:
+              mapping: userRegisteredEvent:com.paypal.NotificationMs.dto.UserRegisteredEvent
+sever:
+  port: 8084
