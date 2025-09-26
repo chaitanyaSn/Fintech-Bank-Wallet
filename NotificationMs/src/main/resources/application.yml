@@ -1,8 +1,9 @@
 spring:
   application:
     name: NotificationMs
-
   kafka:
+    listener:
+      poll-timeout: 7000
     bootstrap-servers: localhost:9092
     consumer:
       group-id: notification_group
@@ -14,6 +15,11 @@ spring:
             trusted:
               packages: "*"
             type:
-              mapping: userRegisteredEvent:com.paypal.NotificationMs.dto.UserRegisteredEvent
-sever:
+              mapping: "com.paypal.UserMs.dto.UserRegisteredEvent:com.paypal.NotificationMs.dto.UserRegisteredEvent,com.paypal.TransactionMs.dto.TransactionCompleteEvent:com.paypal.NotificationMs.dto.TransactionCompleteEvent"
+server:
   port: 8084
+
+logging:
+  level:
+    com.paypal.NotificationMs: DEBUG
+    org.springframework.kafka: DEBUG

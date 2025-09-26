@@ -1,6 +1,7 @@
 package com.paypal.TransactionMs.service;
 
 import com.paypal.TransactionMs.client.WalletClient;
+import com.paypal.TransactionMs.dto.TransactionCompleteEvent;
 import com.paypal.TransactionMs.dto.TransactionDto;
 import com.paypal.TransactionMs.dto.TransactionRequest;
 import com.paypal.TransactionMs.entity.TransactionEntity;
@@ -20,6 +21,7 @@ public class TransactionServiceImpl implements TransactionService{
 
     private final TransactionRepository transactionRepository;
     private final WalletClient walletClient;
+    private final TransactionProducer transactionProducer;
 
 
     @Override
@@ -71,6 +73,9 @@ public class TransactionServiceImpl implements TransactionService{
         transaction.setStatus(TransactionStatus.PROCESSING);
         transaction.setProcessedAt(LocalDateTime.now());
 
+        Double senderBalanceAfter = null;
+        Double receiverBalanceAfter = null;
+
         try {
             // Step 1: Debit sender
             walletClient.debitBalance(transaction.getSenderWalletId(), transaction.getAmount());
@@ -78,10 +83,14 @@ public class TransactionServiceImpl implements TransactionService{
             // Step 2: Credit receiver
             walletClient.creditBalance(transaction.getReceiverWalletId(), transaction.getAmount());
 
-            // Step 3: Mark transaction success
+            // Step 3: Fetch updated balances
+            senderBalanceAfter = walletClient.getWalletBalance(transaction.getSenderWalletId());
+            receiverBalanceAfter = walletClient.getWalletBalance(transaction.getReceiverWalletId());
+
+            // Step 4: Mark transaction success
             transaction.setStatus(TransactionStatus.COMPLETED);
 
-            //step 4:notification producer
+
 
         } catch (Exception e) {
             // If any failure, mark FAILED
@@ -90,6 +99,21 @@ public class TransactionServiceImpl implements TransactionService{
         }
 
         TransactionEntity updated = transactionRepository.save(transaction);
+
+        TransactionCompleteEvent event = new TransactionCompleteEvent(
+                updated.getTransactionId(),
+                updated.getSenderWalletId(),
+                updated.getReceiverWalletId(),
+                updated.getAmount(),
+                updated.getTransactionType(),
+                updated.getStatus(),
+                updated.getDescription(),
+                updated.getCreatedAt(),
+                updated.getProcessedAt(),
+                senderBalanceAfter,
+                receiverBalanceAfter
+        );
+        transactionProducer.sendTransactionInfo(event);
         return updated.toDto();
 
     }

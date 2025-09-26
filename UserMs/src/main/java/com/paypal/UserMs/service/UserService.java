@@ -1,6 +1,7 @@
 package com.paypal.UserMs.service;
 
 import com.paypal.UserMs.dto.UserDto;
+import com.paypal.UserMs.dto.UserNameEmail;
 import com.paypal.UserMs.entity.UserEntity;
 
 import java.util.List;
@@ -17,4 +18,6 @@ public interface UserService {
     List<UserEntity> getAllUser();
 
     UserDto getUser(String email);
+
+    UserNameEmail getInfo(Long walletId);
 }

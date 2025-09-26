@@ -2,6 +2,7 @@ package com.paypal.UserMs.service;
 
 import com.paypal.UserMs.client.WalletClient;
 import com.paypal.UserMs.dto.UserDto;
+import com.paypal.UserMs.dto.UserNameEmail;
 import com.paypal.UserMs.dto.UserRegisteredEvent;
 import com.paypal.UserMs.dto.WalletDto;
 import com.paypal.UserMs.entity.UserEntity;
@@ -78,5 +79,17 @@ public class UserServiceImpl implements UserService{
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email))
                 .toDto();
+    }
+
+    @Override
+    public UserNameEmail getInfo(Long walletId) {
+        UserEntity user=userRepository.findByWalletId(walletId).orElseThrow(()->new UsernameNotFoundException("user not fount"));
+        UserNameEmail userInfo=new UserNameEmail();
+        userInfo.setUserId(user.getId());
+        userInfo.setEmail(user.getEmail());
+        userInfo.setName(user.getName());
+
+        return userInfo;
+
     }
 }

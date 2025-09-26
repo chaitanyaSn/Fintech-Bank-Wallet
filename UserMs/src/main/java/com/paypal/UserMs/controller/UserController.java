@@ -4,6 +4,7 @@ package com.paypal.UserMs.controller;
 import com.paypal.UserMs.dto.LoginDto;
 import com.paypal.UserMs.dto.ResponseDto;
 import com.paypal.UserMs.dto.UserDto;
+import com.paypal.UserMs.dto.UserNameEmail;
 import com.paypal.UserMs.entity.UserEntity;
 import com.paypal.UserMs.service.UserService;
 import com.paypal.UserMs.util.JwtUtil;
@@ -53,6 +54,12 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<UserEntity>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUser());
+    }
+
+    @GetMapping("/info/{walletId}")
+    public ResponseEntity<UserNameEmail> getInfo(@PathVariable Long walletId){
+        return ResponseEntity.ok(userService.getInfo(walletId));
+
     }
 
 
