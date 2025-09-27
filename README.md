@@ -40,7 +40,6 @@ User Sign Up → Wallet Creation → Transaction Processing → Kafka Event → 
 
 ## 🔒 Security Features
 - 🔐 JWT token authentication
-- 👮 Role-based access control (USER/ADMIN)
 - ⚡ API rate limiting
 - 🔒 Service-to-service security
 
