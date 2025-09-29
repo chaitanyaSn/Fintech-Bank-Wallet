@@ -26,4 +26,17 @@ public class RateLimiterConfig {
 //            return Mono.just("internal");
 //        };
 //    }
+
+//    @Bean
+//    public KeyResolver userKeyResolver() {
+//        return exchange -> {
+//            String auth = exchange.getRequest().getHeaders().getFirst("Authorization");
+//            if (auth != null && auth.startsWith("Bearer ")) {
+//                String token = auth.substring(7);
+//                String userId = JwtUtils.getSubject(token); // extract from JWT
+//                return Mono.just("user:" + userId);
+//            }
+//            return Mono.just(exchange.getRequest().getRemoteAddress().getAddress().getHostAddress());
+//        };
+//    }
 }

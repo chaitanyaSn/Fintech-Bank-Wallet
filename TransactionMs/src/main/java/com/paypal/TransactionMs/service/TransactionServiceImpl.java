@@ -8,8 +8,10 @@ import com.paypal.TransactionMs.entity.TransactionEntity;
 import com.paypal.TransactionMs.entity.TransactionStatus;
 import com.paypal.TransactionMs.entity.TransactionType;
 import com.paypal.TransactionMs.repository.TransactionRepository;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,6 +19,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TransactionServiceImpl implements TransactionService{
 
     private final TransactionRepository transactionRepository;
@@ -25,6 +28,7 @@ public class TransactionServiceImpl implements TransactionService{
 
 
     @Override
+    @CircuitBreaker(name="walletMsCircuitBreaker",fallbackMethod = "walletServiceFallback")
     public TransactionDto createTransaction(TransactionRequest request) {
         if (request.getAmount() <= 0) {
             throw new IllegalArgumentException("Amount must be positive");
@@ -64,6 +68,7 @@ public class TransactionServiceImpl implements TransactionService{
 
     @Override
     @Transactional
+    @CircuitBreaker(name="walletMsCircuitBreaker", fallbackMethod = "processTransactionFallback")
     public TransactionDto processTransaction(String transactionId) {
         TransactionEntity transaction=transactionRepository.findByTransactionId(transactionId);
         if (transaction == null) {
@@ -117,6 +122,41 @@ public class TransactionServiceImpl implements TransactionService{
         return updated.toDto();
 
     }
+    // Fallback method for createTransaction
+    public TransactionDto walletServiceFallback(TransactionRequest request, Exception e) {
+        log.error("Wallet service unavailable during transaction creation: {}", e.getMessage());
+
+        // Create a transaction record in FAILED state
+        TransactionEntity transaction = new TransactionEntity();
+        transaction.setTransactionId(UUID.randomUUID().toString());
+        transaction.setSenderWalletId(request.getSenderWalletId());
+        transaction.setReceiverWalletId(request.getReceiverWalletId());
+        transaction.setAmount(request.getAmount());
+        transaction.setTransactionType(request.getTransactionType());
+        transaction.setStatus(TransactionStatus.FAILED);
+        transaction.setDescription("Transaction failed: Wallet service temporarily unavailable");
+        transaction.setCreatedAt(LocalDateTime.now());
+
+        TransactionEntity saved = transactionRepository.save(transaction);
+
+        throw new RuntimeException("Wallet service is currently unavailable. Please try again later.");
+    }
+
+    // Fallback method for processTransaction
+    public TransactionDto processTransactionFallback(String transactionId, Exception e) {
+        log.error("Wallet service unavailable during transaction processing: {}", e.getMessage());
+
+        TransactionEntity transaction = transactionRepository.findByTransactionId(transactionId);
+        if (transaction != null) {
+            transaction.setStatus(TransactionStatus.FAILED);
+            transaction.setProcessedAt(LocalDateTime.now());
+            transactionRepository.save(transaction);
+            return transaction.toDto();
+        }
+
+        throw new RuntimeException("Transaction processing failed due to service unavailability");
+    }
+
 
 
 }

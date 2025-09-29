@@ -7,6 +7,7 @@ import com.paypal.UserMs.dto.UserRegisteredEvent;
 import com.paypal.UserMs.dto.WalletDto;
 import com.paypal.UserMs.entity.UserEntity;
 import com.paypal.UserMs.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,6 +28,7 @@ public class UserServiceImpl implements UserService{
 
 
     @Override
+    @Transactional
     public void createUser(UserDto userDto) {
         if(userRepository.findByEmail(userDto.getEmail()).isPresent()){
             throw new RuntimeException("User with email " + userDto.getEmail() + " already exists");
