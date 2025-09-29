@@ -35,6 +35,7 @@ public class UserController {
         userService.createUser(userDto);
         return ResponseEntity.ok(new ResponseDto("User registered successfully"));
 
+
     }
 
     @PostMapping("/login")

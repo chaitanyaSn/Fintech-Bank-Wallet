@@ -6,9 +6,16 @@ import com.paypal.UserMs.dto.UserNameEmail;
 import com.paypal.UserMs.dto.UserRegisteredEvent;
 import com.paypal.UserMs.dto.WalletDto;
 import com.paypal.UserMs.entity.UserEntity;
+import com.paypal.UserMs.exception.UserAlreadyExistsException;
+import com.paypal.UserMs.exception.WalletServiceException;
 import com.paypal.UserMs.repository.UserRepository;
+<<<<<<< HEAD
+=======
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+>>>>>>> 0ad244e (add circuit breaker with resilence4j to handle walletMs failure)
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +25,7 @@ import java.util.Optional;
 
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService{
 
@@ -29,29 +37,53 @@ public class UserServiceImpl implements UserService{
 
     @Override
     @Transactional
+<<<<<<< HEAD
+=======
+    @CircuitBreaker(name = "walletMsCircuitBreaker", fallbackMethod = "createUserFallback")
+>>>>>>> 0ad244e (add circuit breaker with resilence4j to handle walletMs failure)
     public void createUser(UserDto userDto) {
         if(userRepository.findByEmail(userDto.getEmail()).isPresent()){
-            throw new RuntimeException("User with email " + userDto.getEmail() + " already exists");
+            throw new UserAlreadyExistsException("User with email " + userDto.getEmail() + " already exists");
         }
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
         UserEntity savedUser = userRepository.save(userDto.toEntity());
 
+try{
+    WalletDto walletDto=new WalletDto();
+    walletDto.setUserId(savedUser.getId());
+    walletDto.setBalance(100.0);
 
-        WalletDto walletDto=new WalletDto();
-        walletDto.setUserId(savedUser.getId());
-        walletDto.setBalance(100.0);
+    Long walledId = walletClient.createWallet(walletDto);
 
-        Long walledId = walletClient.createWallet(walletDto);
+    savedUser.setWalletId(walledId);
+    userRepository.save(savedUser);
 
-        savedUser.setWalletId(walledId);
-        userRepository.save(savedUser);
+    UserRegisteredEvent event=new UserRegisteredEvent(savedUser.getId(),savedUser.getName(),savedUser.getEmail());
 
-        UserRegisteredEvent event=new UserRegisteredEvent(savedUser.getId(),savedUser.getName(),savedUser.getEmail());
+    userProducer.sendUserInfo(event);
 
-       userProducer.sendUserInfo(event);
+}catch (Exception e) {
+    log.error("Wallet creation failed for user {}.",
+            savedUser.getId(), e);
 
+    userRepository.save(savedUser);
+
+    throw new WalletServiceException(
+            "User created but wallet setup incomplete. Please contact support or try again later.",e
+    );
+}
     }
+
+    public void createUserFallback(UserDto userDto, Exception e) {
+        log.error("Wallet service unavailable during user registration for email: {}. Error: {}",
+                userDto.getEmail(), e.getMessage());
+
+        throw new RuntimeException(
+                "User registration failed: Wallet service is currently unavailable. Please try again later.", e
+        );
+    }
+
 
     @Override
     public UserDto getUserById(Long id) {
