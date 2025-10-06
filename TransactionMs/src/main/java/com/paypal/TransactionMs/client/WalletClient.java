@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
-@FeignClient(name="WalletMs",url = "http://localhost:8081")
+@FeignClient(name="WalletMs")
 public interface WalletClient {
 
 

@@ -9,10 +9,7 @@ import com.paypal.UserMs.entity.UserEntity;
 import com.paypal.UserMs.exception.UserAlreadyExistsException;
 import com.paypal.UserMs.exception.WalletServiceException;
 import com.paypal.UserMs.repository.UserRepository;
-<<<<<<< HEAD
-=======
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
->>>>>>> 0ad244e (add circuit breaker with resilence4j to handle walletMs failure)
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,10 +34,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     @Transactional
-<<<<<<< HEAD
-=======
     @CircuitBreaker(name = "walletMsCircuitBreaker", fallbackMethod = "createUserFallback")
->>>>>>> 0ad244e (add circuit breaker with resilence4j to handle walletMs failure)
     public void createUser(UserDto userDto) {
         if(userRepository.findByEmail(userDto.getEmail()).isPresent()){
             throw new UserAlreadyExistsException("User with email " + userDto.getEmail() + " already exists");
@@ -64,11 +58,9 @@ try{
     userProducer.sendUserInfo(event);
 
 }catch (Exception e) {
-    log.error("Wallet creation failed for user {}.",
+    userRepository.deleteById(savedUser.getId());
+    log.error("Wallet creation failed for user {} ,user rolled back",
             savedUser.getId(), e);
-
-    userRepository.save(savedUser);
-
     throw new WalletServiceException(
             "User created but wallet setup incomplete. Please contact support or try again later.",e
     );

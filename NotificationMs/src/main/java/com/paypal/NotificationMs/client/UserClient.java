@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 
-@FeignClient(name="UserMs" ,url="http://localhost:8080")
+@FeignClient(name="UserMs")
 public interface UserClient {
 
     @GetMapping("/users/info/{walletId}")

@@ -9,6 +9,7 @@
         <option value="$PROJECT_DIR$/WalletMs/pom.xml" />
         <option value="$PROJECT_DIR$/TransactionMs/pom.xml" />
         <option value="$PROJECT_DIR$/NotificationMs/pom.xml" />
+        <option value="$PROJECT_DIR$/Eureka-Server/pom.xml" />
       </list>
     </option>
   </component>
