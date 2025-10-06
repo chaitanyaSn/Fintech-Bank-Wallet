@@ -22,10 +22,10 @@ User Sign Up → Wallet Creation → Transaction Processing → Kafka Event → 
 
 | Service | Port | Purpose |
 |---------|------|---------|
-| 🚪 **API Gateway** | 8080 | Entry point, auth, routing |
-| 👤 **User Service** | 8081 | Registration, login, JWT |
-| 💳 **Wallet Service** | 8082 | Balance, currency management |
-| 💸 **Transaction Service** | 8083 | Send/receive money, events |
+| 🚪 **API Gateway** | 9000 | Entry point, auth, routing |
+| 👤 **User Service** | 8080 | Registration, login, JWT |
+| 💳 **Wallet Service** | 8081 | Balance, currency management |
+| 💸 **Transaction Service** | 8082 | Send/receive money, events |
 | 📧 **Notification Service** | 8084 | Email/SMS/push notifications |
 | 🔍 **Eureka Server** | 8761 | Service discovery |
 
