@@ -2,22 +2,27 @@ spring:
   application:
     name: NotificationMs
   kafka:
-    listener:
-      poll-timeout: 7000
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: kafka:9092
     consumer:
       group-id: notification_group
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring:
-          json:
-            trusted:
-              packages: "*"
-            type:
-              mapping: "com.paypal.UserMs.dto.UserRegisteredEvent:com.paypal.NotificationMs.dto.UserRegisteredEvent,com.paypal.TransactionMs.dto.TransactionCompleteEvent:com.paypal.NotificationMs.dto.TransactionCompleteEvent"
+        spring.json.trusted.packages: "*"
+        spring.json.type.mapping: "UserRegisteredEvent:com.paypal.NotificationMs.dto.UserRegisteredEvent,TransactionCompleteEvent:com.paypal.NotificationMs.dto.TransactionCompleteEvent"
+    listener:
+      poll-timeout: 3000
+
+
 server:
   port: 8084
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE}
+      fetchRegistry: true
+      registerWithEureka: true
 
 logging:
   level:

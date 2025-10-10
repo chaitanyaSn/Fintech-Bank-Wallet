@@ -122,6 +122,12 @@ public class TransactionServiceImpl implements TransactionService{
         return updated.toDto();
 
     }
+
+    @Override
+    public TransactionDto getTransactionHistoryByUser(Long userId) {
+        return null;
+    }
+
     // Fallback method for createTransaction
     public TransactionDto walletServiceFallback(TransactionRequest request, Exception e) {
         log.error("Wallet service unavailable during transaction creation: {}", e.getMessage());

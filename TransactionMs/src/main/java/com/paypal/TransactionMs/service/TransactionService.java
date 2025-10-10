@@ -8,4 +8,5 @@ public interface TransactionService {
 
     TransactionDto createTransaction(TransactionRequest request);
     TransactionDto processTransaction(String transactionId);
+    TransactionDto getTransactionHistoryByUser(Long userId);
 }
