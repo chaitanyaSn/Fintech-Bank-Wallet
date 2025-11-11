@@ -1,8 +1,9 @@
 # 💰 Digital Wallet Microservices Platform
 
-![Architecture](https://github.com/user-attachments/assets/a2fba38c-9b8d-44b0-abdf-17c49aa5f76b)
+![Architecture](https://github.com/user-attachments/assets/05d876f2-0d59-47fc-9cfa-bc12b059367b)
 
 A scalable microservices-based digital wallet platform with secure transactions and real-time notifications.
+
 
 ## 🏗️ Architecture
 
